@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>AI Review Polisher MVP</title>
+  <style>
+    body { font-family: Arial, sans-serif; padding: 20px; max-width: 800px; margin: auto; }
+    textarea { width: 100%; margin-bottom: 10px; }
+    input[type="checkbox"] { margin-top: 10px; }
+    button { margin-top: 10px; padding: 10px 20px; }
+    h2 { margin-top: 30px; }
+    .result { background-color: #f0f0f0; padding: 10px; margin-top: 5px; border-radius: 5px; }
+    .note { font-size: 0.9em; color: #555; margin-bottom: 20px; }
+  </style>
+</head>
+<body>
+  <h1>AI Review Polisher</h1>
+  <p class="note">
+    This tool helps you polish your own review. 
+    It does NOT exaggerate or add information; it preserves your original intent while making the text clearer and more persuasive. 
+    Your review remains entirely authentic.
+  </p>
+
+  <textarea id="review" rows="5" placeholder="Write your review here..."></textarea><br>
+  <label>
+    <input type="checkbox" id="confirm"> I confirm this is my own experience
+  </label><br>
+  <button id="generate">Generate Polished Review</button>
+
+  <h2>Polished Reviews:</h2>
+  <div id="short" class="result"></div>
+  <div id="medium" class="result"></div>
+  <div id="long" class="result"></div>
+
+  <script>
+    const API_URL = "https://ai-review.mia-zhengluyao.workers.dev"; // <- 替换成你的 Worker URL
+
+    document.getElementById('generate').addEventListener('click', async () => {
+      const review = document.getElementById('review').value.trim();
+      const confirm = document.getElementById('confirm').checked;
+
+      if(!review){
+        alert("Please enter your review.");
+        return;
+      }
+      if(!confirm){
+        alert("Please confirm this is your own experience.");
+        return;
+      }
+
+      // 清空之前的结果
+      document.getElementById('short').innerText = "Loading...";
+      document.getElementById('medium').innerText = "Loading...";
+      document.getElementById('long').innerText = "Loading...";
+
+      try {
+        const res = await fetch(API_URL, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ review })
+        });
+
+        if(!res.ok){
+          throw new Error("Server error: " + res.status);
+        }
+
+        const data = await res.json();
+
+        document.getElementById('short').innerText = "Short: " + (data.short || "");
+        document.getElementById('medium').innerText = "Medium: " + (data.medium || "");
+        document.getElementById('long').innerText = "Long: " + (data.long || "");
+
+      } catch(err){
+        console.error(err);
+        alert("Error: " + err.message);
+        document.getElementById('short').innerText = "";
+        document.getElementById('medium').innerText = "";
+        document.getElementById('long').innerText = "";
+      }
+    });
+  </script>
+</body>
+</html>
