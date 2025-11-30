@@ -16,7 +16,7 @@ async function handleRequest(request) {
 
   const review = body.review || ''
 
-  // 这里可以接入真实 OpenAI API，当前用模拟逻辑
+  
   const output = {
     short: review.slice(0, 50),
     medium: review.slice(0, 100),
@@ -26,7 +26,7 @@ async function handleRequest(request) {
   return new Response(JSON.stringify(output), {
     headers: {
       "Content-Type": "application/json",
-      "Access-Control-Allow-Origin": "*" // 允许前端调用
+      "Access-Control-Allow-Origin": "*" 
     }
   })
 }
