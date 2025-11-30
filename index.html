@@ -33,7 +33,7 @@
   <div id="long" class="result"></div>
 
   <script>
-    const API_URL = "https://ai-review.mia-zhengluyao.workers.dev"; // <- 替换成你的 Worker URL
+    const API_URL = "https://ai-review.mia-zhengluyao.workers.dev";
 
     document.getElementById('generate').addEventListener('click', async () => {
       const review = document.getElementById('review').value.trim();
@@ -48,7 +48,7 @@
         return;
       }
 
-      // 清空之前的结果
+
       document.getElementById('short').innerText = "Loading...";
       document.getElementById('medium').innerText = "Loading...";
       document.getElementById('long').innerText = "Loading...";
