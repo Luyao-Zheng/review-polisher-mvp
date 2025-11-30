@@ -1,83 +1,62 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
   <meta charset="UTF-8">
   <title>AI Review Polisher MVP</title>
   <style>
-    body { font-family: Arial, sans-serif; padding: 20px; max-width: 800px; margin: auto; }
-    textarea { width: 100%; margin-bottom: 10px; }
-    input[type="checkbox"] { margin-top: 10px; }
-    button { margin-top: 10px; padding: 10px 20px; }
-    h2 { margin-top: 30px; }
-    .result { background-color: #f0f0f0; padding: 10px; margin-top: 5px; border-radius: 5px; }
-    .note { font-size: 0.9em; color: #555; margin-bottom: 20px; }
+    body { font-family: Arial; max-width: 600px; margin: 2em auto; }
+    textarea { width: 100%; height: 100px; }
+    button { margin-top: 10px; padding: 0.5em 1em; }
+    #output { margin-top: 20px; white-space: pre-wrap; }
   </style>
 </head>
 <body>
-  <h1>AI Review Polisher</h1>
-  <p class="note">
-    This tool helps you polish your own review. 
-    It does NOT exaggerate or add information; it preserves your original intent while making the text clearer and more persuasive. 
-    Your review remains entirely authentic.
-  </p>
+  <h2>AI Review Polisher MVP</h2>
+  <p>Enter your real review below. Our AI will polish it without exaggerating. It preserves your intent and authenticity.</p>
 
-  <textarea id="review" rows="5" placeholder="Write your review here..."></textarea><br>
+  <textarea id="reviewInput" placeholder="Write your review here..."></textarea>
+  <br>
   <label>
-    <input type="checkbox" id="confirm"> I confirm this is my own experience
-  </label><br>
-  <button id="generate">Generate Polished Review</button>
+    <input type="checkbox" id="confirmCheckbox"> I confirm this is my real experience
+  </label>
+  <br>
+  <button id="submitBtn">Generate Polished Review</button>
 
-  <h2>Polished Reviews:</h2>
-  <div id="short" class="result"></div>
-  <div id="medium" class="result"></div>
-  <div id="long" class="result"></div>
+  <div id="output"></div>
 
   <script>
-    const API_URL = "https://ai-review.mia-zhengluyao.workers.dev";
+    const submitBtn = document.getElementById('submitBtn')
+    const reviewInput = document.getElementById('reviewInput')
+    const confirmCheckbox = document.getElementById('confirmCheckbox')
+    const outputDiv = document.getElementById('output')
+    const API_URL = 'https://ai-review.mia-zhengluyao.workers.dev/'
 
-    document.getElementById('generate').addEventListener('click', async () => {
-      const review = document.getElementById('review').value.trim();
-      const confirm = document.getElementById('confirm').checked;
+    submitBtn.addEventListener('click', async () => {
+      outputDiv.textContent = ''
 
-      if(!review){
-        alert("Please enter your review.");
-        return;
+      if (!confirmCheckbox.checked) {
+        alert('Please confirm this is your real experience.')
+        return
       }
-      if(!confirm){
-        alert("Please confirm this is your own experience.");
-        return;
+
+      const reviewText = reviewInput.value.trim()
+      if (!reviewText) {
+        alert('Please enter a review.')
+        return
       }
-
-
-      document.getElementById('short').innerText = "Loading...";
-      document.getElementById('medium').innerText = "Loading...";
-      document.getElementById('long').innerText = "Loading...";
 
       try {
         const res = await fetch(API_URL, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ review })
-        });
-
-        if(!res.ok){
-          throw new Error("Server error: " + res.status);
-        }
-
-        const data = await res.json();
-
-        document.getElementById('short').innerText = "Short: " + (data.short || "");
-        document.getElementById('medium').innerText = "Medium: " + (data.medium || "");
-        document.getElementById('long').innerText = "Long: " + (data.long || "");
-
-      } catch(err){
-        console.error(err);
-        alert("Error: " + err.message);
-        document.getElementById('short').innerText = "";
-        document.getElementById('medium').innerText = "";
-        document.getElementById('long').innerText = "";
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ review: reviewText })
+        })
+        const data = await res.json()
+        outputDiv.textContent = `Short version:\n${data.short}\n\nMedium version:\n${data.medium}\n\nLong version:\n${data.long}`
+      } catch (err) {
+        outputDiv.textContent = `Error: ${err.message}`
       }
-    });
+    })
   </script>
 </body>
 </html>
